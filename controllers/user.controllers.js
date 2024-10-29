@@ -8,7 +8,7 @@ export const createUser = async (req, res) => {
         res.status(201).json({ user, token });
     } catch (e) {
         if (e.name === 'ValidationError') {
-            return res.status(400).json({ error: e.message }); // Send validation error message
+            return res.status(400).json({ error: e.message });
         }
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -44,7 +44,7 @@ export const updateUserById = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        updates.forEach((update) => (user[update] = req.body[update]));  // Update user with new data
+        updates.forEach((update) => (user[update] = req.body[update]));
         await user.save();
         res.status(200).json(user);
     } catch (e) {
@@ -67,7 +67,7 @@ export const deleteUserById = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        const user = await User.findByCredentials(req.body.email, req.body.password);  // Custom model method
+        const user = await User.findByCredentials(req.body.email, req.body.password);  
         const token = await user.generateToken();  
         res.status(200).json({ user, token });
     } catch (e) {

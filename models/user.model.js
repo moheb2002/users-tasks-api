@@ -28,20 +28,31 @@ const userSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    return next();  
-  }
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  if (!this.isModified('password')) return next();
+  
+  const saltRounds = parseInt(process.env.SALT_ROUNDS) || 8; 
+  this.password = await bcrypt.hash(this.password, saltRounds);
   next();  
 });
-
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+userSchema.statics.findByCredentials = async function (email, password) {
+  const user = await this.findOne({ email });
+  if (!user) {
+    throw new Error('Unable to login');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error('Unable to login');
+  }
+
+  return user;
+}; 
 
 const User = mongoose.model('User', userSchema);
 
