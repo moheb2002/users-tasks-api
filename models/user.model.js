@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import validator from 'validator';
 
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { 
@@ -18,9 +20,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function(v) {
-        return v.length >= 8 && /[A-Z]/.test(v) && /\d/.test(v);
+        return passwordRegex.test(v);
       },
-      message: () => `Password must be at least 8 characters long, contain at least one uppercase letter, and one number!`
+      message: () => `Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character!`
     }
   },
   tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }], 
