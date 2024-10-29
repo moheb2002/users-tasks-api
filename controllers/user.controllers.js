@@ -68,7 +68,7 @@ export const deleteUserById = async (req, res) => {
 export const loginUser = async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);  
-        const token = await user.generateToken();  
+        const token = await User.generateToken();  
         res.status(200).json({ user, token });
     } catch (e) {
         res.status(400).json({ error: e.message });
